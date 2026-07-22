@@ -6,7 +6,7 @@ window.LOJA = {
   // <-- SUBSTITUA pelo número/link direto do WhatsApp da FB Veículos.
   // Pode ser "5581900000000" (código do país + DDD + número) ou o link
   // "message/XXXXXXX" do Instagram, igual está de exemplo abaixo.
-  whatsapp: '5581900000000',
+  whatsapp: '558182334990',
   nome: 'FB Veículos',
 
   // <-- SUBSTITUA pelo domínio real do site DEPOIS de publicar.
