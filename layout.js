@@ -27,7 +27,7 @@ function headerHTML(activeKey){
   <header class="site-header">
     <div class="header-inner">
       <a href="index.html" class="brand">
-        <img class="brand-mark" src="logo.png" alt="FB Veículos">
+        <img class="brand-mark" src="logo-crop.png" alt="FB Veículos">
         <span class="brand-name">FB VEÍCULOS<span>Compra · Venda · Troca</span></span>
       </a>
 
@@ -88,7 +88,7 @@ function footerHTML(){
     <div class="footer-inner">
       <div class="footer-brand">
         <a href="index.html" class="brand">
-          <img class="brand-mark" src="logo.png" alt="FB Veículos">
+          <img class="brand-mark" src="logo-crop.png" alt="FB Veículos">
           <span class="brand-name" style="color:#fff">FB VEÍCULOS</span>
         </a>
         <p>Seminovos de qualidade e multimarcas. Compra, venda e troca com procedência garantida, em frente ao Posto Maracajá, Surubim-PE.</p>
