@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motos — FB Veículos</title>
+<meta name="description" content="Motos FB Veículos: Motos revisadas, econômicas e prontas para o dia a dia. Compre pelo WhatsApp.">
+<link rel="icon" href="assets/logo-crop.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<p class="breadcrumb"><a href="index.html">Início</a> / Motos</p>
+
+<section class="cat-hero">
+  <div class="cat-hero-inner">
+    <div>
+      <p class="eyebrow">Categoria</p>
+      <h1>Motos</h1>
+      <p>Agilidade no trânsito com baixo custo de manutenção.</p>
+    </div>
+    <svg class="cat-hero-icon"><use href="icons.svg#ic-moto"></use></svg>
+  </div>
+</section>
+
+<section class="section">
+  <div class="filters">
+    <span class="filters-label">Câmbio:</span>
+    <button data-filter-cambio="Manual">Manual</button>
+    <button data-filter-cambio="Automático">Automático</button>
+  </div>
+  <div class="filters">
+    <span class="filters-label">Combustível:</span>
+    <button data-filter-combustivel="Flex">Flex</button>
+    <button data-filter-combustivel="Diesel">Diesel</button>
+  </div>
+  <div class="vehicle-grid" id="grid"></div>
+</section>
+
+<section class="cta-strip">
+  <p class="eyebrow" style="justify-content:center;color:#CFE6D7">Não achou o que procura?</p>
+  <h2 class="reveal">A gente confirma disponibilidade e te ajuda a escolher o veículo certo.</h2>
+  <a class="btn" data-whats="Olá! Estou vendo a categoria Motos no site e preciso de ajuda.">Chamar no WhatsApp</a>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="main.js"></script>
+<script src="layout.js"></script>
+<script src="veiculos.js"></script>
+<script>
+  mountLayout('motos');
+  initCategoryPage('motos', 'grid');
+</script>
+</body>
+</html>

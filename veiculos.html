@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estoque completo — FB Veículos</title>
+<meta name="description" content="Estoque completo FB Veículos: todas as categorias em um só lugar. Compre pelo WhatsApp.">
+<link rel="icon" href="assets/logo-crop.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<p class="breadcrumb"><a href="index.html">Início</a> / Estoque completo</p>
+
+<section class="cat-hero">
+  <div class="cat-hero-inner">
+    <div>
+      <p class="eyebrow">Estoque completo</p>
+      <h1>Todos os veículos</h1>
+      <p>Todo o estoque FB Veículos em um só lugar. Filtre por categoria para achar mais rápido.</p>
+    </div>
+    <svg class="cat-hero-icon"><use href="icons.svg#ic-selo"></use></svg>
+  </div>
+</section>
+
+<section class="section">
+  <div class="filters" id="catFilters">
+    <span class="filters-label">Categoria:</span>
+    <button data-filter-cat="hatches">Hatches</button>
+    <button data-filter-cat="sedas">Sedãs</button>
+    <button data-filter-cat="suvs">SUVs</button>
+    <button data-filter-cat="picapes">Picapes</button>
+    <button data-filter-cat="utilitarios">Utilitários</button>
+    <button data-filter-cat="motos">Motos</button>
+  </div>
+  <div class="vehicle-grid" id="grid"></div>
+</section>
+
+<section class="cta-strip">
+  <p class="eyebrow" style="justify-content:center;color:#CFE6D7">Não achou o que procura?</p>
+  <h2 class="reveal">A gente confirma disponibilidade e te ajuda a escolher o veículo certo.</h2>
+  <a class="btn" data-whats="Olá! Estou vendo o estoque completo da FB Veículos e preciso de ajuda.">Chamar no WhatsApp</a>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="main.js"></script>
+<script src="layout.js"></script>
+<script src="veiculos.js"></script>
+<script>
+  mountLayout('veiculos');
+  initTodasPage('grid');
+</script>
+</body>
+</html>

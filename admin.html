@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel da Loja — FB Veículos</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/logo-crop.png">
+<link rel="stylesheet" href="style.css">
+<style>
+  .admin-wrap{max-width:1040px;margin:0 auto}
+  .admin-box{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:36px;box-shadow:var(--shadow-sm)}
+  .admin-login{max-width:420px;margin:60px auto}
+  .admin-login h1{font-size:1.5rem;margin-bottom:8px;text-align:center}
+  .admin-login p{color:var(--ink-soft);text-align:center;margin-bottom:26px;font-size:.92rem}
+  .campo{margin-bottom:16px}
+  .campo label{display:block;font-family:var(--font-mono);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
+  .campo input,.campo select,.campo textarea{
+    width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:var(--radius-sm);
+    font-family:var(--font-body);font-size:.95rem;background:#fff;color:var(--ink);
+  }
+  .campo textarea{resize:vertical;min-height:70px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .form-grid .full{grid-column:1/-1}
+  .foto-item{position:relative;width:100px}
+  .foto-item img{width:100px;height:75px;object-fit:cover;border-radius:8px;display:block;border:1px solid var(--line)}
+  .foto-item .foto-remover{
+    position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;
+    background:var(--verde-700);color:#fff;border:2px solid var(--paper);cursor:pointer;
+    font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;
+  }
+  .foto-item .foto-capa{
+    position:absolute;bottom:2px;left:2px;right:2px;background:rgba(6,33,15,.75);color:#fff;
+    font-family:var(--font-mono);font-size:.58rem;text-align:center;padding:2px 0;border-radius:2px;
+  }
+  .msg{padding:12px 16px;border-radius:var(--radius-sm);font-size:.88rem;margin-bottom:18px;display:none}
+  .msg.erro{background:#FBEAEA;color:#A13A3A;display:block}
+  .msg.ok{background:var(--verde-100);color:var(--verde-800);display:block}
+  .tabela-produtos{width:100%;border-collapse:collapse;margin-top:10px;font-size:.88rem}
+  .tabela-produtos th{
+    text-align:left;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--ink-soft);padding:10px 12px;border-bottom:2px solid var(--line);
+  }
+  .tabela-produtos td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .tabela-produtos tr:hover{background:var(--verde-50)}
+  .pill{
+    display:inline-block;padding:3px 10px;border-radius:999px;font-family:var(--font-mono);font-size:.68rem;
+    text-transform:uppercase;letter-spacing:.04em;
+  }
+  .pill.ativo{background:var(--verde-100);color:var(--verde-800)}
+  .pill.inativo{background:#EFEFEF;color:#7A7A7A}
+  .btn-mini{
+    font-family:var(--font-body);font-size:.72rem;font-weight:700;
+    padding:7px 13px;border-radius:999px;border:1px solid var(--verde-700);background:none;cursor:pointer;
+    margin-right:6px;color:var(--verde-700);
+  }
+  .btn-mini:hover{background:var(--verde-700);color:#fff}
+  .btn-mini.perigo{border-color:#C34A4A;color:#C34A4A}
+  .btn-mini.perigo:hover{background:#C34A4A;color:#fff}
+  .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+  .top-bar h1{font-size:1.6rem}
+  #painelLogado{display:none}
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<section class="section admin-wrap" style="padding-top:44px">
+
+  <!-- TELA DE LOGIN -->
+  <div id="painelLogin" class="admin-box admin-login">
+    <h1>Painel da loja</h1>
+    <p>Área restrita para gerenciar o estoque de veículos. Entre com o e-mail e senha cadastrados no Supabase.</p>
+    <div id="msgLogin" class="msg"></div>
+    <form id="formLogin">
+      <div class="campo">
+        <label for="loginEmail">E-mail</label>
+        <input type="email" id="loginEmail" required autocomplete="username">
+      </div>
+      <div class="campo">
+        <label for="loginSenha">Senha</label>
+        <input type="password" id="loginSenha" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Entrar</button>
+    </form>
+  </div>
+
+  <!-- PAINEL LOGADO -->
+  <div id="painelLogado">
+    <div class="top-bar">
+      <h1>Veículos do estoque</h1>
+      <button type="button" class="btn-mini" id="btnSair">Sair</button>
+    </div>
+
+    <div id="msgPainel" class="msg"></div>
+
+    <div class="admin-box" style="margin-bottom:32px">
+      <h3 id="formTitulo" style="margin-bottom:18px">Adicionar veículo</h3>
+      <form id="formProduto">
+        <input type="hidden" id="pId">
+        <div class="form-grid">
+          <div class="campo">
+            <label for="pCategoria">Categoria</label>
+            <select id="pCategoria" required></select>
+          </div>
+          <div class="campo">
+            <label for="pNome">Nome do veículo (marca, modelo, versão)</label>
+            <input type="text" id="pNome" placeholder="Chevrolet Onix LT 1.0" required>
+          </div>
+          <div class="campo">
+            <label for="pPreco">Preço (R$)</label>
+            <input type="text" id="pPreco" placeholder="74900" required>
+          </div>
+          <div class="campo">
+            <label for="pAno">Ano (modelo/fabricação)</label>
+            <input type="text" id="pAno" placeholder="2021/2022">
+          </div>
+          <div class="campo">
+            <label for="pKm">Quilometragem</label>
+            <input type="text" id="pKm" placeholder="38000">
+          </div>
+          <div class="campo">
+            <label for="pCambio">Câmbio</label>
+            <select id="pCambio">
+              <option value="Manual">Manual</option>
+              <option value="Automático">Automático</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="pCombustivel">Combustível</label>
+            <select id="pCombustivel">
+              <option value="Flex">Flex</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Híbrido">Híbrido</option>
+              <option value="Elétrico">Elétrico</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="pCor">Cor</label>
+            <input type="text" id="pCor" placeholder="Prata">
+          </div>
+          <div class="campo full">
+            <label for="pFotoArquivo">Fotos do veículo (pode escolher várias de uma vez)</label>
+            <input type="file" id="pFotoArquivo" accept="image/*" multiple>
+            <input type="hidden" id="pFoto">
+            <div id="fotoPreviewWrap" style="margin-top:10px;display:none;flex-wrap:wrap;gap:10px" ></div>
+          </div>
+          <div class="campo full">
+            <label for="pOpcionais">Opcionais (separados por ;)</label>
+            <input type="text" id="pOpcionais" placeholder="Ar-condicionado;Multimídia;Câmera de ré">
+          </div>
+          <div class="campo">
+            <label for="pDestaque">Marcar como "Destaque"?</label>
+            <select id="pDestaque"><option value="false">Não</option><option value="true">Sim</option></select>
+          </div>
+          <div class="campo">
+            <label for="pAtivo">Visível no site?</label>
+            <select id="pAtivo"><option value="true">Sim</option><option value="false">Não (esconder)</option></select>
+          </div>
+          <div class="campo full">
+            <label for="pDescricao">Descrição curta</label>
+            <textarea id="pDescricao" placeholder="Único dono, revisado, manual e chave reserva."></textarea>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <button type="submit" class="btn btn-primary" id="btnSalvar">Adicionar veículo</button>
+          <button type="button" class="btn btn-ghost" id="btnCancelarEdicao" style="display:none;color:var(--verde-700);border-color:var(--verde-700)">Cancelar edição</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="admin-box">
+      <h3 style="margin-bottom:6px">Veículos cadastrados</h3>
+      <p style="color:var(--ink-soft);font-size:.85rem;margin-bottom:0">Clique em "editar" pra alterar um veículo, ou "excluir" pra remover de vez. Pra só esconder sem apagar, edite e marque "Visível no site? Não".</p>
+      <div style="overflow-x:auto">
+        <table class="tabela-produtos" id="tabelaProdutos">
+          <thead>
+            <tr>
+              <th>Veículo</th><th>Categoria</th><th>Preço</th><th>Status</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="tabelaProdutosBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="main.js"></script>
+<script src="layout.js"></script>
+<script src="veiculos.js"></script>
+<script>
+  mountLayout('admin');
+
+  const semBanco = !window.LOJA.supabaseUrl || !window.LOJA.supabaseAnonKey;
+  const msgLoginEl = document.getElementById('msgLogin');
+
+  if(semBanco){
+    msgLoginEl.className = 'msg erro';
+    msgLoginEl.textContent = 'O banco de dados ainda não foi configurado neste site. Preencha supabaseUrl e supabaseAnonKey em main.js (veja o supabase-setup.sql).';
+    document.getElementById('formLogin').style.display = 'none';
+  } else {
+    const supabase = window.supabase.createClient(window.LOJA.supabaseUrl, window.LOJA.supabaseAnonKey);
+
+    const painelLogin = document.getElementById('painelLogin');
+    const painelLogado = document.getElementById('painelLogado');
+    const msgPainel = document.getElementById('msgPainel');
+
+    function mostrarMsg(el, texto, tipo){
+      el.className = 'msg ' + tipo;
+      el.textContent = texto;
+      setTimeout(() => { if(tipo === 'ok') el.className = 'msg'; }, 4000);
+    }
+
+    // popula o <select> de categorias com as mesmas 6 categorias do site
+    const selectCategoria = document.getElementById('pCategoria');
+    Object.entries(CATEGORIA_INFO).forEach(([key, info]) => {
+      const opt = document.createElement('option');
+      opt.value = info.label; opt.textContent = info.label;
+      selectCategoria.appendChild(opt);
+    });
+
+    async function checarSessao(){
+      const { data: { session } } = await supabase.auth.getSession();
+      if(session){ mostrarPainel(); } else { mostrarLogin(); }
+    }
+
+    function mostrarLogin(){ painelLogin.style.display = 'block'; painelLogado.style.display = 'none'; }
+    function mostrarPainel(){ painelLogin.style.display = 'none'; painelLogado.style.display = 'block'; carregarTabela(); }
+
+    document.getElementById('formLogin').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const senha = document.getElementById('loginSenha').value;
+      const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
+      if(error){
+        let msg = error.message || 'Não foi possível entrar.';
+        if(msg.toLowerCase().includes('email not confirmed')) msg = 'Esse e-mail ainda não foi confirmado no Supabase (Authentication → Users → confirme o e-mail desse usuário).';
+        else if(msg.toLowerCase().includes('invalid login credentials')) msg = 'E-mail ou senha incorretos — confira se esse e-mail aparece em Authentication → Users no Supabase, e se está usando a senha do USUÁRIO (não a senha do banco criada ao abrir o projeto).';
+        mostrarMsg(msgLoginEl, msg, 'erro');
+        return;
+      }
+      mostrarPainel();
+    });
+
+    document.getElementById('btnSair').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      mostrarLogin();
+    });
+
+    async function carregarTabela(){
+      const { data, error } = await supabase.from('veiculos').select('*').order('id', { ascending: false });
+      const corpo = document.getElementById('tabelaProdutosBody');
+      if(error){ corpo.innerHTML = `<tr><td colspan="5">Erro ao carregar veículos.</td></tr>`; return; }
+      corpo.innerHTML = data.map(v => `
+        <tr>
+          <td>${escapeHTML(v.nome)}</td>
+          <td>${escapeHTML(v.categoria)}</td>
+          <td>${(v.preco||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</td>
+          <td><span class="pill ${v.ativo ? 'ativo' : 'inativo'}">${v.ativo ? 'Visível' : 'Oculto'}</span></td>
+          <td style="white-space:nowrap">
+            <button class="btn-mini" onclick="editarProduto(${v.id})">editar</button>
+            <button class="btn-mini perigo" onclick="excluirProduto(${v.id})">excluir</button>
+          </td>
+        </tr>
+      `).join('') || `<tr><td colspan="5">Nenhum veículo cadastrado ainda.</td></tr>`;
+      window._produtosCache = data;
+    }
+
+    function limparFormulario(){
+      document.getElementById('pId').value = '';
+      document.getElementById('formProduto').reset();
+      limparFoto();
+      document.getElementById('formTitulo').textContent = 'Adicionar veículo';
+      document.getElementById('btnSalvar').textContent = 'Adicionar veículo';
+      document.getElementById('btnCancelarEdicao').style.display = 'none';
+    }
+
+    window.editarProduto = function(id){
+      const v = (window._produtosCache || []).find(x => x.id === id);
+      if(!v) return;
+      document.getElementById('pId').value = v.id;
+      document.getElementById('pCategoria').value = v.categoria;
+      document.getElementById('pNome').value = v.nome;
+      document.getElementById('pPreco').value = String(v.preco).replace('.', ',');
+      document.getElementById('pAno').value = v.ano || '';
+      document.getElementById('pKm').value = v.km || '';
+      document.getElementById('pCambio').value = v.cambio || 'Manual';
+      document.getElementById('pCombustivel').value = v.combustivel || 'Flex';
+      document.getElementById('pCor').value = v.cor || '';
+      arquivosNovos = [];
+      fotosAtuais = (v.foto || '').split(';').map(f => f.trim()).filter(Boolean);
+      renderPreviews();
+      document.getElementById('pOpcionais').value = v.opcionais || '';
+      document.getElementById('pDestaque').value = String(!!v.destaque);
+      document.getElementById('pAtivo').value = String(!!v.ativo);
+      document.getElementById('pDescricao').value = v.descricao || '';
+      document.getElementById('formTitulo').textContent = 'Editando: ' + v.nome;
+      document.getElementById('btnSalvar').textContent = 'Salvar alterações';
+      document.getElementById('btnCancelarEdicao').style.display = 'inline-flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    document.getElementById('btnCancelarEdicao').addEventListener('click', limparFormulario);
+
+    window.excluirProduto = async function(id){
+      const v = (window._produtosCache || []).find(x => x.id === id);
+      const nome = v ? v.nome : 'este veículo';
+      if(!confirm(`Excluir "${nome}" de vez? Essa ação não pode ser desfeita.`)) return;
+      const { error } = await supabase.from('veiculos').delete().eq('id', id);
+      if(error){ mostrarMsg(msgPainel, 'Erro ao excluir: ' + error.message, 'erro'); return; }
+      mostrarMsg(msgPainel, 'Veículo excluído.', 'ok');
+      carregarTabela();
+    };
+
+    function slugLocal(s){
+      return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || 'veiculo';
+    }
+
+    const inputFotoArquivo = document.getElementById('pFotoArquivo');
+    const fotoPreviewWrap = document.getElementById('fotoPreviewWrap');
+
+    // fotosAtuais: URLs já salvas (veículo em edição) que continuam valendo
+    // arquivosNovos: File[] escolhidos agora, ainda não enviados
+    let fotosAtuais = [];
+    let arquivosNovos = [];
+
+    function renderPreviews(){
+      const itensExistentes = fotosAtuais.map((url, i) => `
+        <div class="foto-item" data-tipo="existente" data-index="${i}">
+          <img src="${url}" alt="Foto ${i+1}">
+          ${i === 0 ? '<span class="foto-capa">Capa</span>' : ''}
+          <button type="button" class="foto-remover" title="Remover" data-remover-existente="${i}">×</button>
+        </div>`).join('');
+      const itensNovos = arquivosNovos.map((file, i) => `
+        <div class="foto-item" data-tipo="novo" data-index="${i}">
+          <img src="${URL.createObjectURL(file)}" alt="Nova foto ${i+1}">
+          ${(fotosAtuais.length === 0 && i === 0) ? '<span class="foto-capa">Capa</span>' : ''}
+          <button type="button" class="foto-remover" title="Remover" data-remover-novo="${i}">×</button>
+        </div>`).join('');
+
+      fotoPreviewWrap.innerHTML = itensExistentes + itensNovos;
+      fotoPreviewWrap.style.display = (fotosAtuais.length || arquivosNovos.length) ? 'flex' : 'none';
+
+      fotoPreviewWrap.querySelectorAll('[data-remover-existente]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          fotosAtuais.splice(Number(btn.getAttribute('data-remover-existente')), 1);
+          renderPreviews();
+        });
+      });
+      fotoPreviewWrap.querySelectorAll('[data-remover-novo]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          arquivosNovos.splice(Number(btn.getAttribute('data-remover-novo')), 1);
+          renderPreviews();
+        });
+      });
+    }
+
+    function limparFoto(){
+      inputFotoArquivo.value = '';
+      fotosAtuais = [];
+      arquivosNovos = [];
+      renderPreviews();
+    }
+
+    inputFotoArquivo.addEventListener('change', () => {
+      arquivosNovos = arquivosNovos.concat(Array.from(inputFotoArquivo.files));
+      inputFotoArquivo.value = ''; // permite escolher os mesmos arquivos de novo se remover e re-adicionar
+      renderPreviews();
+    });
+
+    // envia um arquivo pro Storage do Supabase (bucket "fotos") e devolve a URL pública
+    async function enviarFotoParaStorage(file){
+      const nomeArquivo = `${Date.now()}-${Math.random().toString(36).slice(2,7)}-${slugLocal(file.name.replace(/\.[^.]+$/, ''))}.${file.name.split('.').pop()}`;
+      const { error } = await supabase.storage.from('fotos').upload(nomeArquivo, file, { cacheControl: '3600', upsert: false });
+      if(error) throw error;
+      const { data } = supabase.storage.from('fotos').getPublicUrl(nomeArquivo);
+      return data.publicUrl;
+    }
+
+    document.getElementById('formProduto').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('pId').value;
+      const nome = document.getElementById('pNome').value.trim();
+      let precoTxt = document.getElementById('pPreco').value.trim().replace(/[^\d.,]/g,'');
+      precoTxt = precoTxt.includes(',') ? precoTxt.replace(/\./g,'').replace(',','.') : precoTxt;
+      const preco = parseFloat(precoTxt) || 0;
+      const km = parseInt(document.getElementById('pKm').value.replace(/\D/g,'')) || 0;
+
+      const btnSalvar = document.getElementById('btnSalvar');
+      const textoOriginalBotao = btnSalvar.textContent;
+
+      // envia todas as fotos novas escolhidas pro Storage antes de salvar o veículo
+      let urlsFinais = fotosAtuais.slice();
+      if(arquivosNovos.length){
+        btnSalvar.disabled = true;
+        try{
+          for(let i = 0; i < arquivosNovos.length; i++){
+            btnSalvar.textContent = `Enviando foto ${i+1} de ${arquivosNovos.length}…`;
+            const url = await enviarFotoParaStorage(arquivosNovos[i]);
+            urlsFinais.push(url);
+          }
+        }catch(err){
+          mostrarMsg(msgPainel, 'Erro ao enviar foto: ' + err.message, 'erro');
+          btnSalvar.disabled = false;
+          btnSalvar.textContent = textoOriginalBotao;
+          return;
+        }
+      }
+
+      const payload = {
+        categoria: document.getElementById('pCategoria').value,
+        nome,
+        preco,
+        ano: document.getElementById('pAno').value.trim(),
+        km,
+        cambio: document.getElementById('pCambio').value,
+        combustivel: document.getElementById('pCombustivel').value,
+        cor: document.getElementById('pCor').value.trim(),
+        foto: urlsFinais.join(';') || null,
+        opcionais: document.getElementById('pOpcionais').value.trim(),
+        destaque: document.getElementById('pDestaque').value === 'true',
+        ativo: document.getElementById('pAtivo').value === 'true',
+        descricao: document.getElementById('pDescricao').value.trim()
+      };
+
+      btnSalvar.textContent = 'Salvando…';
+      let error;
+      if(id){
+        ({ error } = await supabase.from('veiculos').update(payload).eq('id', id));
+      } else {
+        payload.slug = slugLocal(nome) + '-' + Date.now().toString(36);
+        ({ error } = await supabase.from('veiculos').insert(payload));
+      }
+
+      btnSalvar.disabled = false;
+      btnSalvar.textContent = textoOriginalBotao;
+
+      if(error){ mostrarMsg(msgPainel, 'Erro ao salvar: ' + error.message, 'erro'); return; }
+      mostrarMsg(msgPainel, id ? 'Veículo atualizado.' : 'Veículo adicionado.', 'ok');
+      limparFormulario();
+      carregarTabela();
+    });
+
+    checarSessao();
+  }
+</script>
+</body>
+</html>

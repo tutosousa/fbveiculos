@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sedãs — FB Veículos</title>
+<meta name="description" content="Sedãs FB Veículos: Sedãs com bom espaço interno e suspensão confortável para família e viagens. Compre pelo WhatsApp.">
+<link rel="icon" href="assets/logo-crop.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<p class="breadcrumb"><a href="index.html">Início</a> / Sedãs</p>
+
+<section class="cat-hero">
+  <div class="cat-hero-inner">
+    <div>
+      <p class="eyebrow">Categoria</p>
+      <h1>Sedãs</h1>
+      <p>Conforto, espaço e elegância — sedãs revisados e prontos para rodar.</p>
+    </div>
+    <svg class="cat-hero-icon"><use href="icons.svg#ic-sedan"></use></svg>
+  </div>
+</section>
+
+<section class="section">
+  <div class="filters">
+    <span class="filters-label">Câmbio:</span>
+    <button data-filter-cambio="Manual">Manual</button>
+    <button data-filter-cambio="Automático">Automático</button>
+  </div>
+  <div class="filters">
+    <span class="filters-label">Combustível:</span>
+    <button data-filter-combustivel="Flex">Flex</button>
+    <button data-filter-combustivel="Diesel">Diesel</button>
+  </div>
+  <div class="vehicle-grid" id="grid"></div>
+</section>
+
+<section class="cta-strip">
+  <p class="eyebrow" style="justify-content:center;color:#CFE6D7">Não achou o que procura?</p>
+  <h2 class="reveal">A gente confirma disponibilidade e te ajuda a escolher o veículo certo.</h2>
+  <a class="btn" data-whats="Olá! Estou vendo a categoria Sedãs no site e preciso de ajuda.">Chamar no WhatsApp</a>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="main.js"></script>
+<script src="layout.js"></script>
+<script src="veiculos.js"></script>
+<script>
+  mountLayout('sedas');
+  initCategoryPage('sedas', 'grid');
+</script>
+</body>
+</html>

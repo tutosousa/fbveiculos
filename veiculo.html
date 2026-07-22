@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veículo — FB Veículos</title>
+<meta name="description" content="Confira este veículo na FB Veículos.">
+<link rel="icon" href="assets/logo-crop.png">
+<link rel="stylesheet" href="style.css">
+<style>
+  .galeria-thumbs{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .galeria-thumbs img{
+    width:74px;height:56px;object-fit:cover;border-radius:8px;cursor:pointer;
+    border:2px solid transparent;opacity:.7;transition:opacity .2s ease,border-color .2s ease;
+  }
+  .galeria-thumbs img:hover{opacity:1}
+  .galeria-thumbs img.ativa{opacity:1;border-color:var(--verde-600)}
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<p class="breadcrumb" id="breadcrumb"><a href="index.html">Início</a> / <span id="breadcrumbAtual">Veículo</span></p>
+
+<section class="section" style="padding-top:36px">
+  <div id="conteudoVeiculo">
+    <div class="empty-state">Carregando veículo…</div>
+  </div>
+</section>
+
+<div id="ctaCategoria"></div>
+
+<div id="site-footer"></div>
+
+<script src="main.js"></script>
+<script src="layout.js"></script>
+<script src="veiculos.js"></script>
+<script>
+  mountLayout('veiculos');
+
+  (async () => {
+    const wrap = document.getElementById('conteudoVeiculo');
+
+    function mostrarErro(texto){
+      wrap.innerHTML = `<div class="empty-state">${texto}<br><a href="veiculos.html" class="link-more" style="display:inline-block;margin-top:12px">Ver estoque completo →</a></div>`;
+    }
+
+    try{
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get('slug');
+      if(!slug){ mostrarErro('Veículo não especificado.'); return; }
+
+      const estoque = await carregarEstoque();
+      let achado = null, catKey = null;
+      for(const key of Object.keys(estoque)){
+        const v = (estoque[key].items || []).find(item => item.slug === slug);
+        if(v){ achado = v; catKey = key; break; }
+      }
+      if(!achado){ mostrarErro('Esse veículo não foi encontrado (pode ter sido vendido ou removido).'); return; }
+
+      const v = achado;
+      // valores defensivos — nunca deixa um campo ausente quebrar a página
+      const nome = v.nome || 'Veículo sem nome';
+      const desc = v.desc || '';
+      const preco = typeof v.preco === 'number' ? v.preco : 0;
+      const opcionais = Array.isArray(v.opcionais) ? v.opcionais : [];
+      const catLabel = (CATEGORIA_INFO[catKey] && CATEGORIA_INFO[catKey].label) || '';
+      const icon = (CATEGORIA_INFO[catKey] && CATEGORIA_INFO[catKey].icon) || 'ic-selo';
+
+      const nomeSeguro = escapeHTML(nome);
+      const descSeguro = escapeHTML(desc);
+      const fotos = fotosDoVeiculo(v);
+
+      const mediaHTML = fotos.length
+        ? `<img id="fotoPrincipal" src="${fotos[0]}" alt="${nomeSeguro}" style="width:100%;display:block;aspect-ratio:4/3;object-fit:cover"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+           <div class="foto-fallback" style="display:none;align-items:center;justify-content:center;aspect-ratio:4/3">
+             <svg style="width:46%;color:var(--verde-600)"><use href="icons.svg#${icon}"></use></svg>
+           </div>`
+        : `<div style="display:flex;align-items:center;justify-content:center;aspect-ratio:4/3">
+             <svg style="width:46%;color:var(--verde-600)"><use href="icons.svg#${icon}"></use></svg>
+           </div>`;
+
+      const thumbsHTML = fotos.length > 1
+        ? `<div class="galeria-thumbs">${fotos.map((f, i) =>
+            `<img src="${f}" alt="Foto ${i+1} de ${nomeSeguro}" class="${i===0?'ativa':''}"
+                 onclick="trocarFotoPrincipal(this,'${f.replace(/'/g,"\\'")}')">`
+          ).join('')}</div>`
+        : '';
+
+      const specsHTML = `<span>${escapeHTML(v.ano||'—')}</span><span>${fmtKm(v.km)}</span><span>${escapeHTML(v.cambio||'—')}</span><span>${escapeHTML(v.combustivel||'—')}</span>`;
+      const tagsHTML = opcionais.map(o => `<span>${escapeHTML(o)}</span>`).join('');
+      const linkCompleto = PAGINAS_PRONTAS.has(v.slug) ? veiculoLink(v.slug) : `${window.LOJA.siteUrl}/veiculo.html?slug=${encodeURIComponent(v.slug)}`;
+      const msg = `Olá! Tenho interesse neste veículo da FB Veículos:\\n${nome} - ${v.ano||''} - ${fmtPreco(preco)}\\n${linkCompleto}\\n\\nAinda está disponível?`;
+
+      document.title = `${nome} — FB Veículos`;
+      document.getElementById('breadcrumbAtual').textContent = nome;
+      if(catKey){
+        document.getElementById('breadcrumb').innerHTML =
+          `<a href="index.html">Início</a> / <a href="${catKey}.html">${escapeHTML(catLabel)}</a> / ${nomeSeguro}`;
+      }
+
+      wrap.innerHTML = `
+        <div class="vehicle-detail">
+          <div class="vehicle-detail-media">
+            ${mediaHTML}
+            ${thumbsHTML}
+          </div>
+          <div class="vehicle-detail-info">
+            <p class="eyebrow">${escapeHTML(catLabel)}</p>
+            <h1>${nomeSeguro}</h1>
+            <p class="vehicle-detail-desc">${descSeguro}</p>
+            <div class="vehicle-price">${fmtPreco(preco)}</div>
+            <div class="vehicle-specs">${specsHTML}</div>
+            <table class="spec-table">
+              <tr><td>Cor</td><td>${escapeHTML(v.cor||'—')}</td></tr>
+              <tr><td>Opcionais</td><td>${tagsHTML || '—'}</td></tr>
+            </table>
+            <a class="btn btn-primary" data-whats="${escapeHTML(msg)}" style="margin-top:8px">
+              <svg><use href="icons.svg#ic-whats"></use></svg>
+              Falar sobre este veículo
+            </a>
+            <div style="margin-top:18px">
+              <a class="link-more" href="${catKey || 'veiculos.html'}${catKey ? '.html' : ''}">← Voltar para ${escapeHTML(catLabel || 'o estoque')}</a>
+            </div>
+          </div>
+        </div>`;
+
+      if(catKey){
+        document.getElementById('ctaCategoria').innerHTML = `
+          <section class="cta-strip">
+            <p class="eyebrow" style="justify-content:center;color:#CFE6D7">Não é bem esse o veículo?</p>
+            <h2>Veja mais opções de ${escapeHTML(catLabel.toLowerCase())} no estoque.</h2>
+            <a class="btn" href="${catKey}.html">Ver ${escapeHTML(catLabel.toLowerCase())}</a>
+          </section>`;
+      }
+
+      document.querySelectorAll('[data-whats]').forEach(a => {
+        a.href = whatsLink(a.getAttribute('data-whats'));
+        a.target = '_blank'; a.rel = 'noopener';
+      });
+    }catch(err){
+      console.error('Erro ao carregar a página do veículo:', err);
+      mostrarErro('Não foi possível carregar esse veículo agora. Tenta recarregar a página.');
+    }
+  })();
+
+  function trocarFotoPrincipal(thumb, url){
+    const principal = document.getElementById('fotoPrincipal');
+    if(principal) principal.src = url;
+    document.querySelectorAll('.galeria-thumbs img').forEach(t => t.classList.remove('ativa'));
+    thumb.classList.add('ativa');
+  }
+</script>
+</body>
+</html>

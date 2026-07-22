@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiat Toro Freedom 1.8 — FB Veículos</title>
+<meta name="description" content="Fiat Toro Freedom 1.8 - 2020/2021 - R$ 129.900 - FB Veículos">
+<link rel="icon" href="assets/logo-crop.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<p class="breadcrumb"><a href="index.html">Início</a> / <a href="picapes.html">Picapes</a> / Fiat Toro Freedom 1.8</p>
+
+<section class="section" style="padding-top:36px">
+  <div class="vehicle-detail">
+    <div class="vehicle-detail-media">
+      <div style="display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;background:var(--verde-50)">
+        <svg style="width:46%;color:var(--verde-600)"><use href="icons.svg#ic-picape"></use></svg>
+      </div>
+    </div>
+    <div class="vehicle-detail-info">
+      <p class="eyebrow">Picapes</p>
+      <h1>Fiat Toro Freedom 1.8</h1>
+      <p class="vehicle-detail-desc">Robusta e versátil, ideal pra trabalho e lazer.</p>
+      <div class="vehicle-price">R$ 129.900</div>
+      <div class="vehicle-specs">
+        <span>2020/2021</span>
+        <span>56.000 km</span>
+        <span>Automático</span>
+        <span>Flex</span>
+      </div>
+      <table class="spec-table">
+        <tr><td>Cor</td><td>Branco</td></tr>
+        <tr><td>Opcionais</td><td><span>Central multimídia</span> <span>Câmera de ré</span> <span>Rack de teto</span></td></tr>
+      </table>
+      <a class="btn btn-primary" data-whats="Olá! Tenho interesse no Fiat Toro Freedom 1.8 - 2020/2021 - R$ 129.900 https://fbveiculos.com.br/veiculo-fiat-toro-freedom.html Ainda está disponível?">
+        <svg><use href="icons.svg#ic-whats"></use></svg>
+        Falar sobre este veículo
+      </a>
+      <div style="margin-top:18px">
+        <a class="link-more" href="picapes.html">← Voltar para Picapes</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="main.js"></script>
+<script src="layout.js"></script>
+<script>
+  mountLayout('veiculos');
+  document.querySelectorAll('[data-whats]').forEach(a => {
+    a.href = whatsLink(a.getAttribute('data-whats'));
+    a.target = '_blank';
+    a.rel = 'noopener';
+  });
+</script>
+</body>
+</html>

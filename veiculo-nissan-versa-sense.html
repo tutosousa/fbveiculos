@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nissan Versa Sense 1.6 — FB Veículos</title>
+<meta name="description" content="Nissan Versa Sense 1.6 - 2021/2022 - R$ 76.900 - FB Veículos">
+<link rel="icon" href="assets/logo-crop.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<p class="breadcrumb"><a href="index.html">Início</a> / <a href="sedas.html">Sedãs</a> / Nissan Versa Sense 1.6</p>
+
+<section class="section" style="padding-top:36px">
+  <div class="vehicle-detail">
+    <div class="vehicle-detail-media">
+      <div style="display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;background:var(--verde-50)">
+        <svg style="width:46%;color:var(--verde-600)"><use href="icons.svg#ic-sedan"></use></svg>
+      </div>
+    </div>
+    <div class="vehicle-detail-info">
+      <p class="eyebrow">Sedãs</p>
+      <h1>Nissan Versa Sense 1.6</h1>
+      <p class="vehicle-detail-desc">Baixa quilometragem, único dono, todo revisado.</p>
+      <div class="vehicle-price">R$ 76.900</div>
+      <div class="vehicle-specs">
+        <span>2021/2022</span>
+        <span>33.000 km</span>
+        <span>Manual</span>
+        <span>Flex</span>
+      </div>
+      <table class="spec-table">
+        <tr><td>Cor</td><td>Prata</td></tr>
+        <tr><td>Opcionais</td><td><span>Ar-condicionado</span> <span>Vidro elétrico</span> <span>Trava elétrica</span></td></tr>
+      </table>
+      <a class="btn btn-primary" data-whats="Olá! Tenho interesse no Nissan Versa Sense 1.6 - 2021/2022 - R$ 76.900 https://fbveiculos.com.br/veiculo-nissan-versa-sense.html Ainda está disponível?">
+        <svg><use href="icons.svg#ic-whats"></use></svg>
+        Falar sobre este veículo
+      </a>
+      <div style="margin-top:18px">
+        <a class="link-more" href="sedas.html">← Voltar para Sedãs</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="main.js"></script>
+<script src="layout.js"></script>
+<script>
+  mountLayout('veiculos');
+  document.querySelectorAll('[data-whats]').forEach(a => {
+    a.href = whatsLink(a.getAttribute('data-whats'));
+    a.target = '_blank';
+    a.rel = 'noopener';
+  });
+</script>
+</body>
+</html>
